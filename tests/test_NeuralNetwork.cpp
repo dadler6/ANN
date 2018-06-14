@@ -11,15 +11,29 @@
  */
 
 // Include
-#include <Eigen/Dense>
-#include "../src/NeuralNetwork.cpp"
+#include "../src/NeuralNetwork.hpp"
 #include <gtest/gtest.h>
+
+// Using
+using namespace neuralnetwork;
+using namespace std;
 
 // Practice test
 
-// TEST(ErrorTermCheck, PositiveNos) { 
-//     ASSERT_EQ(6, squareRoot(36.0));
-//     ASSERT_EQ(18.0, squareRoot(324.0));
-//     ASSERT_EQ(25.4, squareRoot(645.16));
-//     ASSERT_EQ(0, squareRoot(0.0));
-// }
+TEST(ErrorTermCheck, Check) { 
+    // Define inputs
+    Matrix2f X_input;
+    NeuralNetwork ann;
+    X_input << 1, 2, 3, 4;
+
+    // Define result
+    Vector2f res_1;
+    res_1 = ann.predict(X_input);
+
+    // Define true value
+    Vector2f true_1;
+    true_1 << 0, -6;
+
+    // Assertions
+    ASSERT_TRUE(true_1.isApprox(res_1));
+ }

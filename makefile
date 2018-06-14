@@ -1,11 +1,41 @@
-# Current make system
+# Makefile for neural network implementation
+#
+# Written by Dan Adler
+# Email: daadler0309@gmail.com
+# GitHub: https://github.com/dadler6/
+#
+#
+
+# C++ flags
+CC = g++
+CFLAGS = -std=c++11 -stdlib=libc++ -pedantic -Wall -Wextra -O
+
+# Folders
+SRC = ./src
 BIN = ./bin
-SOURCE = ./src
-GTEST = ./googletest/googletest/src
-TEST = ./tests
-CFLAGS = -std=c++11 -stdlib=libc++
-GTESTFLAGS = -lgtest -lpthread
+TESTS = ./tests
+EIGEN = /usr/local/include/eigen3/
 
+# GTest
+LIB = /usr/local/lib
+GTEST = $(LIB)/libgtest.a $(LIB)/libgtest_main.a -lpthread
 
-test_NeuralNetwork.o: $(SOURCE)/main.cpp
-	g++ $(CLAGS) $(SOURCE)/NeuralNetwork.cpp $(TEST)/test_NeuralNetwork.cpp $(GTEST)/gtest_main.cc $(GTESTFLAGS) -o $(BIN)/test_NeuralNetwork.o
+# File pairs
+
+# all
+all: test
+
+# default
+default: neural_network
+
+# neural_network
+neural_network: $(SRC)/NeuralNetwork.cpp $(SRC)/NeuralNetwork.hpp
+	$(CC) $(CFLAGS) -I $(EIGEN) $(SRC)/NeuralNetwork.cpp -o $(BIN)/neural_network
+
+# Tests
+test: $(TESTS)/test_NeuralNetwork.cpp
+	$(CC) $(CFLAGS) -I $(EIGEN) $(GTEST) $(SRC)/NeuralNetwork.cpp $(TESTS)/test_NeuralNetwork.cpp -o $(BIN)/test
+
+# Clean
+clean:
+	rm $(BIN)/*

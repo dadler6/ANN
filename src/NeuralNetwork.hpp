@@ -8,15 +8,15 @@
  * propogation and stochastic gradient descent.
  */
 
+// Definitions
+#ifndef NEURALNETWORK_H_
+#define NEURALNETWORK_H_
+
 // Include
 #include <Eigen/Dense>
 
 // Name space
 using namespace Eigen;
-
-// Definitions
-#ifndef NEURALNETWORK_H_
-#define NEURALNETWORK_H_
 
 namespace neuralnetwork {
 
