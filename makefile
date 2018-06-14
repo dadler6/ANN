@@ -20,21 +20,19 @@ EIGEN = /usr/local/include/eigen3/
 LIB = /usr/local/lib
 GTEST = $(LIB)/libgtest.a $(LIB)/libgtest_main.a -lpthread
 
-# File pairs
-
 # all
 all: test
 
 # default
-default: neural_network
-
-# neural_network
-neural_network: $(SRC)/NeuralNetwork.cpp $(SRC)/NeuralNetwork.hpp
-	$(CC) $(CFLAGS) -I $(EIGEN) $(SRC)/NeuralNetwork.cpp -o $(BIN)/neural_network
+default: neural_network.o
 
 # Tests
-test: $(TESTS)/test_NeuralNetwork.cpp
-	$(CC) $(CFLAGS) -I $(EIGEN) $(GTEST) $(SRC)/NeuralNetwork.cpp $(TESTS)/test_NeuralNetwork.cpp -o $(BIN)/test
+test: neural_network
+	$(CC) $(CFLAGS) -I $(EIGEN) $(GTEST) $(TESTS)/test_NeuralNetwork.cpp $(BIN)/neural_network.o -o $(BIN)/test
+
+# neural_network
+neural_network:
+	$(CC) -c $(CFLAGS) -I $(EIGEN) $(SRC)/NeuralNetwork.cpp -o $(BIN)/neural_network.o
 
 # Clean
 clean:
