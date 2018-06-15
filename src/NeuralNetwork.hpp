@@ -40,8 +40,9 @@ class NeuralNetwork {
          * params:
          * MatrixXf X, an array of features and datapoints (n data points x m features)
          * ArrayXf y, the target values (n data points x 1)
+         * float eta, the step size
          */
-        void fit(MatrixXf X, VectorXf y);
+        void fit(MatrixXf X, VectorXf y, float eta);
 
         /**
          * Predict a set of target values based upon a set of features

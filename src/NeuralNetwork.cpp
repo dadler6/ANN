@@ -24,7 +24,7 @@ NeuralNetwork::~NeuralNetwork(void) {
 
 };
 
-void NeuralNetwork::fit(MatrixXf X, VectorXf y) {
+void NeuralNetwork::fit(MatrixXf X, VectorXf y, float eta) {
 
 };
 

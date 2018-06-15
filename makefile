@@ -21,20 +21,22 @@ LIB = /usr/local/lib
 GTEST = $(LIB)/libgtest.a $(LIB)/libgtest_main.a -lpthread
 
 # all
-all: test run
+all: test_neural_network test_main run
 
 # default
 default: run
 
 # test
-test: test
+test: test_neural_network test_main
 
 run: neural_network
-	$(CC) $(CFLAGS) -I $(EIGEN) $(GTEST) $(SRC)/main.cpp $(BIN)/neural_network.o -o $(BIN)/run
+	$(CC) $(CFLAGS) -I $(EIGEN) $(SRC)/main.cpp $(BIN)/neural_network.o -o $(BIN)/run
 
 # Tests
-test: neural_network
-	$(CC) $(CFLAGS) -I $(EIGEN) $(GTEST) $(TESTS)/test_NeuralNetwork.cpp $(BIN)/neural_network.o -o $(BIN)/test
+test_neural_network: neural_network
+	$(CC) $(CFLAGS) -I $(EIGEN) $(GTEST) $(TESTS)/test_NeuralNetwork.cpp $(BIN)/neural_network.o -o $(BIN)/test_neural_network
+test_main: neural_network
+	$(CC) $(CFLAGS) -I $(EIGEN) $(GTEST) $(TESTS)/test_main.cpp $(SRC)/main.cpp $(BIN)/neural_network.o -o $(BIN)/test_main
 
 # neural_network
 neural_network:

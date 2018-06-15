@@ -14,32 +14,86 @@
  * 2) Predict on a network.  This will intake a training dataset,
  *    an already trained network, and then predict information
  *    from that network.
+ * 
+ * To train (1) you can use the following command:
+ * ./run train input_data output_ann_file step_size
+ * 
+ * To predict (2) you can use the following command:
+ * ./run predict input_data output_data_file ann_file 
  */
 
 // Include
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include "NeuralNetwork.hpp"
 
 // Using
 using namespace neuralnetwork;
 
 /**
+ * Open data based upon an input file name.
+ * 
+ * WE ASSUME the last column of the data is the variables to predict (target)
+ * 
+ * params:
+ * string filename, the filename to read in
+ * 
+ * return:
+ * MatrixXf, the train + target data
+ */
+MatrixXf open_data(string filename) {
+    // Read in file
+    cout << "Reading in input data..." << endl;
+    ifstream in;
+    in.open(filename);
+
+    // Now make matrix, initialize vector to do so
+    vector<float> cells;
+    string line;
+    
+    // Count current lines
+    int rows = 0;
+    int cols;
+    while(getline(in, line)) {
+        cols = 0;
+        stringstream lineStream(line);
+        string cell;
+        if (rows > 0) {
+            while(getline(lineStream, cell, ',')) {
+                cells.push_back(stod(cell));
+                cols++;
+            }
+        }
+        rows++;
+    }
+
+    // Initialize matrix and return
+    MatrixXf X(cells.data());
+
+    return X;
+}
+
+/**
  * Train network using a given dataset, train and target columns.
  * 
  * params:
- * MatrixXf X, an array of features
- * VectorXf y, a vector of target data points
+ * MatrixXf X, an array of features where the last column is the target
+ * folat eta, the gradient descent step size
  * string output_filename, the output filename to save neural network too
  */
-int train_network(MatrixXf X, VectorXf y, string filename) {
+int train_network(MatrixXf X, float eta, string filename) {
+    // Get y data from X
+    VectorXf y = X.rightCols(1);
+    // Drop last column of X
+    X = X.leftCols(X.cols() - 1);
 
     // Build a neural network
     NeuralNetwork ann = NeuralNetwork();
 
     // Fit the network
     cout << 'Fitting network...' << endl;
-    ann.fit(X, y);
+    ann.fit(X, y, eta);
 
     // Save network
     cout << 'Saving network...' << endl;
@@ -88,8 +142,33 @@ int predict_values(MatrixXf X, string ann_filename, string output_filename) {
 /**
  * Runs the program.  Will look for arguments and output errors
  * if arguments do not exist.
+ * 
+ * params:
+ * int argc, the number of input arguments
+ * char *argv[], an array of input arguments
  */
-int main() {
-    cout << "Hello, world!" << endl;
-    return 0;
+int main(int argc, char *argv[]) {
+    // Output flag
+    int output_flag;
+    // Open data
+    string data_file = argv[2];
+    MatrixXf X = open_data(data_file);
+    // Get output filename
+    string output_file = argv[3];
+    
+    // Check to see if argv is train or predict
+    if (strcmp(argv[1], "train") == 0) {
+        // Get other parameters
+        float eta = stof(argv[4]);
+        // Train data
+        output_flag = train_network(X, eta, output_file);
+    } else if (strcmp(argv[1], "predict") == 0) {
+        // Get other parameters
+        string ann_file = argv[4];
+        output_flag = predict_values(X, ann_file, output_file);
+    } else {
+        output_flag = 1;
+    }
+
+    return output_flag;
 }
