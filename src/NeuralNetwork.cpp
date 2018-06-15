@@ -15,7 +15,6 @@
 // Namespace
 namespace neuralnetwork {
 
-
 // Public methods
 NeuralNetwork::NeuralNetwork(void) {
 
@@ -28,6 +27,14 @@ NeuralNetwork::~NeuralNetwork(void) {
 void NeuralNetwork::fit(MatrixXf X, VectorXf y) {
 
 };
+
+ostream & operator<<(ostream &out, const NeuralNetwork &nn) {
+    // Save contents to file
+};
+
+istream & operator>>(istream &in, const NeuralNetwork &nn) {
+    // Open up file
+}
 
 VectorXf NeuralNetwork::predict(MatrixXf X) {
     // For testing purposes

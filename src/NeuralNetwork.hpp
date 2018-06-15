@@ -17,6 +17,7 @@
 
 // Name space
 using namespace Eigen;
+using namespace std;
 
 namespace neuralnetwork {
 
@@ -52,6 +53,24 @@ class NeuralNetwork {
          * VectorXf, the predicted values for each (n data points x 1)
          */
         VectorXf predict(MatrixXf X);
+
+        /**
+         * Save to file using ostream operator
+         * 
+         * params:
+         * ostream &out: the filename to save to
+         * NeuralNetwork &nn: the object to write
+         */
+        friend ostream & operator<<(ostream &out, const NeuralNetwork &nn);
+
+        /**
+         * Open a file using the istream operator.
+         * 
+         * params:
+         * istream &in: the filename to open
+         * NeuralNetwork &nn: the object to create
+         */
+        friend istream & operator>>(istream &in, const NeuralNetwork &nn);
 
     private:
         /**

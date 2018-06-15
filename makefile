@@ -21,10 +21,16 @@ LIB = /usr/local/lib
 GTEST = $(LIB)/libgtest.a $(LIB)/libgtest_main.a -lpthread
 
 # all
-all: test
+all: test run
 
 # default
-default: neural_network.o
+default: run
+
+# test
+test: test
+
+run: neural_network
+	$(CC) $(CFLAGS) -I $(EIGEN) $(GTEST) $(SRC)/main.cpp $(BIN)/neural_network.o -o $(BIN)/run
 
 # Tests
 test: neural_network
