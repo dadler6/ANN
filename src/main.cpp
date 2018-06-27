@@ -16,7 +16,7 @@
  *    from that network.
  * 
  * To train (1) you can use the following command:
- * ./run train input_data output_ann_file step_size
+ * ./run train input_data output_ann_file step_size threshold num_layers layers_config
  * 
  * To predict (2) you can use the following command:
  * ./run predict input_data output_data_file ann_file 
@@ -25,7 +25,6 @@
 // Include
 #include <iostream>
 #include <fstream>
-#include <vector>
 #include "NeuralNetwork.hpp"
 
 // Using
@@ -79,25 +78,35 @@ MatrixXf open_data(string filename) {
  * 
  * params:
  * MatrixXf X, an array of features where the last column is the target
- * folat eta, the gradient descent step size
+ * float eta, the gradient descent step size
+ * float thresh, the threshold for deciding if a class is positive or not
  * string output_filename, the output filename to save neural network too
+ * int num_layers, the number of layers
+ * VectorXf config,  vector showing the configuration of the network
  */
-int train_network(MatrixXf X, float eta, string filename) {
+int train_network(
+    MatrixXf X, 
+    float eta, 
+    float thresh,
+    string output_filename,
+    int num_layers,
+    VectorXf config
+    ) {
     // Get y data from X
     VectorXf y = X.rightCols(1);
     // Drop last column of X
     X = X.leftCols(X.cols() - 1);
 
     // Build a neural network
-    NeuralNetwork ann = NeuralNetwork();
+    NeuralNetwork ann = NeuralNetwork(num_layers, config, eta, thresh);
 
     // Fit the network
     cout << 'Fitting network...' << endl;
-    ann.fit(X, y, eta);
+    ann.fit(X, y);
 
     // Save network
     cout << 'Saving network...' << endl;
-    ofstream ofs(filename);
+    ofstream ofs(output_filename);
     ofs << ann;
     ofs.close();
 
@@ -160,8 +169,11 @@ int main(int argc, char *argv[]) {
     if (strcmp(argv[1], "train") == 0) {
         // Get other parameters
         float eta = stof(argv[4]);
+        float thresh = stof(argv[5]);
+        int num_layers = stof(argv[6]);
+        VectorXf config = open_data(argv[7]);
         // Train data
-        output_flag = train_network(X, eta, output_file);
+        output_flag = train_network(X, eta, thresh, output_file, num_layers, config);
     } else if (strcmp(argv[1], "predict") == 0) {
         // Get other parameters
         string ann_file = argv[4];

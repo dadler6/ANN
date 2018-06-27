@@ -14,6 +14,8 @@
 
 // Include
 #include <Eigen/Dense>
+#include <unsupported/Eigen/MatrixFunctions>
+#include <vector>
 
 // Name space
 using namespace Eigen;
@@ -25,9 +27,16 @@ class NeuralNetwork {
     
     public:
         /**
-         * Constructor for the neural network
+         * Constructor for the neural network.  Will setup all the basic
+         * parameters needed to train the network.
+         * 
+         * params:
+         * int num_layers, the number of layers in one's network
+         * VectorXf config, the number of nodes per layer
+         * float eta, the training step size for gradiet descent
+         * float threshold, the threshold for classification
          */
-        NeuralNetwork();
+        NeuralNetwork(int n_layers, VectorXf conf, float step, float thresh);
 
         /**
          * Destructor for the neural network
@@ -38,17 +47,18 @@ class NeuralNetwork {
          * Fit a nerual network based upon the features and target output
          * 
          * params:
-         * MatrixXf X, an array of features and datapoints (n data points x m features)
+         * MatrixXf X, an array of features and datapoints 
+         *             (n data points x m features)
          * ArrayXf y, the target values (n data points x 1)
-         * float eta, the step size
          */
-        void fit(MatrixXf X, VectorXf y, float eta);
+        void fit(MatrixXf X, VectorXf y);
 
         /**
          * Predict a set of target values based upon a set of features
          * 
          * params:
-         * MatrixXf X, an array of features and datapoints (n data points x m features)
+         * MatrixXf X, an array of features and datapoints 
+         *             (n data points x m features)
          * 
          * returns:
          * VectorXf, the predicted values for each (n data points x 1)
@@ -74,6 +84,19 @@ class NeuralNetwork {
         friend istream & operator>>(istream &in, const NeuralNetwork &nn);
 
     private:
+        // Parameters to be set by a user
+        vector<VectorXf> weights;
+        int num_layers;
+        float eta;
+        float threshold;
+        VectorXf config;
+        VectorXf o;
+
+        // Parameters that are constant
+        int max_iter = 1000;
+        float cutoff_err = 0.05;
+        float curr_error = 1000000.0;
+
         /**
          * Calculate the error term based upon a target and a given output.  
          * Will follow the vectorized version of the following:
@@ -87,6 +110,47 @@ class NeuralNetwork {
          * VectorXf, an array of the delta_k values
          */
         static VectorXf error_term(VectorXf output, VectorXf target);
+
+        /**
+         * Feed forward parameters and calculate end error term.
+         *
+         * params:
+         * MatrixXf X, the training set
+         * VectorXf y, the target values  
+         */
+        void feed_forward(MatrixXf X, VectorXf y);
+
+        /**
+         * Get the current sum of squared errors between target and output
+         * 
+         * params:
+         * VectorXf y, the target values
+         * VectorXf o, the current output
+         */
+        void sse(VectorXf y, VectorXf o);
+
+
+        /**
+         * Sigmoid function = 1/(1 + exp(-y))
+         * 
+         * params:
+         * VectorXf output, the current output of the network
+         * 
+         * return:
+         * VectorXf, each element in the original vector with the
+         *           sigmoid taken upon it
+         */
+        static VectorXf sigmoid(VectorXf output);
+
+        /**
+         * Threshold based upon some given value
+         * 
+         * params:
+         * VectorXf output, the output vector after passing through
+         *                  a sigmoid function
+         */
+        void threshold_output(VectorXf output);
+
 
 };
 
