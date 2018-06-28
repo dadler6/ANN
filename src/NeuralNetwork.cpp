@@ -16,6 +16,8 @@
 namespace neuralnetwork {
 
 // Public methods
+NeuralNetwork::NeuralNetwork(void) = default;
+
 NeuralNetwork::NeuralNetwork(
     int n_layers, 
     VectorXf conf, 
@@ -39,14 +41,24 @@ NeuralNetwork::~NeuralNetwork(void) {
 
 
 void NeuralNetwork::fit(MatrixXf X, VectorXf y) {
-    // Set target vector to 0
+    // Set starting parameters
+    VectorXf x;
     int curr_iter = 0;
-    o = VectorXf::Zero(y.rows());
     // Go through ending criteria
     while ((curr_error > cutoff_err) || (curr_iter < max_iter)) {
-        // Back propograte
-        // Feed forward
-        feed_forward(X, y);
+        // Initialize new output to 0
+        o = VectorXf::Zero(y.rows());
+        // Go through each training example
+        for (size_t r = 0; r < X.rows(); r++) {
+            // Get current row
+            x = X.row(r);
+            // Feed forward
+            o(r) = feed_forward(x);
+            // Back propogate
+            back_propogate(y);
+            // Update weights
+            update_weights();
+        };
         // Update error
         error_term(o, y);
     }
@@ -64,8 +76,14 @@ istream & operator>>(istream &in, const NeuralNetwork &nn) {
 
 
 VectorXf NeuralNetwork::predict(MatrixXf X) {
+    // Initialize vector of 0's as output
+    o = VectorXf::Zero(X.rows());
+    // Go through each traning example
+    for (size_t r = 0; r < X.rows(); r++) {
+        o(r) = feed_forward(X.row(r));
+    }
     // For testing purposes
-    return NeuralNetwork::error_term(X.col(0), X.col(1));
+    return o;
 };
 
 
@@ -77,22 +95,30 @@ static VectorXf error_term(VectorXf output, VectorXf target) {
 };
 
 
-void NeuralNetwork::feed_forward(MatrixXf X, VectorXf y) {
+float NeuralNetwork::feed_forward(VectorXf x) {
     // Copy matrix into inputs
-    MatrixXf curr = X;
-    MatrixXf temp_weights;
+    MatrixXf curr = x;
+
+    // Get a temporary output
+    VectorXf temp_output;
+
+    // Clear vector outputs
+    temp_outputs.clear();
+
     // Go through each part of the vactor and multiply by the weights
     for(
         vector<VectorXf>::iterator it = weights.begin(); 
         it != weights.end(); ++it
     ) {
+        // Push back current value
+        temp_outputs.push_back(curr);
         // Replicate current value of the iterator into a matrix
-        temp_weights = it->replicate(1, curr.rows());
-        curr *= temp_weights;
+        curr = sigmoid(*it * curr);
     };
-    // Pass through sigmoid to get output
-    MatrixXf output = sigmoid(curr);
-    // Threshold
+    // Pass through threshold to get output
+    temp_output = threshold_output(curr);
+    temp_outputs.push_back(temp_output);
+    return temp_output(0);
 };
 
 
@@ -108,11 +134,56 @@ static VectorXf sigmoid(VectorXf output) {
 };
 
 
-void NeuralNetwork::threshold_output(VectorXf output) {
+VectorXf NeuralNetwork::threshold_output(VectorXf output) {
     // Threshold based upon the threshold parameter
     VectorXf ones = VectorXf::Ones(output.size());
     VectorXf zeros = VectorXf::Zero(output.size());
-    o = (output.array() > threshold).select(ones, zeros);
+    return (output.array() > threshold).select(ones, zeros);
+};
+
+
+void NeuralNetwork::back_propogate(VectorXf y) {
+    // Clear vector and set end counter
+    delta.clear();
+    bool end_counter = true;
+    int curr_pos = 0;
+
+    // Start at the end of the weights and calculate errors
+    for (
+        vector<MatrixXf>::reverse_iterator i = temp_outputs.rbegin(); 
+        i != temp_outputs.rend(); 
+        i++
+    ) {
+        // Check if at the end of the vector
+        if (end_counter) {
+            delta.push_back(
+                i->array() * (1 - i->array()) * (y.array() - i->array())
+            );
+            end_counter = false;
+        } else {
+            delta.push_back(
+                i->array() * 
+                (1 - i->array()) * 
+                weights[num_layers - 1 - curr_pos].dot(delta[curr_pos])
+            );
+            curr_pos++;
+        };
+    };
+};
+
+
+void NeuralNetwork::update_weights(void) {
+    int curr_pos = 0;
+    // Go through each weight set and update
+    for (
+        vector<VectorXf>::iterator i = temp_outputs.begin(); 
+        i != temp_outputs.end(); 
+        i++
+    ) {
+        // Update weights
+        weights[curr_pos] += eta * delta[curr_pos] * (*i);
+        curr_pos++;
+    };
 };
 
 }

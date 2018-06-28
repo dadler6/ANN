@@ -132,7 +132,7 @@ int predict_values(MatrixXf X, string ann_filename, string output_filename) {
     // Load in file
     cout << "Reading in neural network..." << endl;
     ifstream ifs(ann_filename);
-    NeuralNetwork ann;
+    NeuralNetwork ann = NeuralNetwork();
     ifs >> ann;
 
     // Predict data

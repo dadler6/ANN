@@ -27,6 +27,12 @@ class NeuralNetwork {
     
     public:
         /**
+         * Default constructor for the neural network.  Can be used if
+         * going to fill in parameters later.
+         */
+        NeuralNetwork(void);
+
+        /**
          * Constructor for the neural network.  Will setup all the basic
          * parameters needed to train the network.
          * 
@@ -41,7 +47,7 @@ class NeuralNetwork {
         /**
          * Destructor for the neural network
          */
-        ~NeuralNetwork();
+        ~NeuralNetwork(void);
 
         /**
          * Fit a nerual network based upon the features and target output
@@ -86,6 +92,8 @@ class NeuralNetwork {
     private:
         // Parameters to be set by a user
         vector<VectorXf> weights;
+        vector<VectorXf> temp_outputs;
+        vector<MatrixXf> delta;
         int num_layers;
         float eta;
         float threshold;
@@ -115,10 +123,27 @@ class NeuralNetwork {
          * Feed forward parameters and calculate end error term.
          *
          * params:
-         * MatrixXf X, the training set
-         * VectorXf y, the target values  
+         * VectorXf x, a datapoint from the training set
+         * 
+         * return:
+         * float, the current output
          */
-        void feed_forward(MatrixXf X, VectorXf y);
+        float feed_forward(VectorXf x);
+
+
+        /**
+         * Back propogate to find error terms and update weights
+         * 
+         * params:
+         * VectorXf y, the target values
+         */
+        void back_propogate(VectorXf y);
+
+
+        /**
+         * Update weights
+         */
+        void update_weights(void);
 
         /**
          * Get the current sum of squared errors between target and output
@@ -142,16 +167,17 @@ class NeuralNetwork {
          */
         static VectorXf sigmoid(VectorXf output);
 
+
         /**
          * Threshold based upon some given value
          * 
          * params:
-         * VectorXf output, the output vector after passing through
-         *                  a sigmoid function
+         * VectorXf output, the output float after passing through
+         *               the threshold
+         * return:
+         * VectorXf, the thresholded object
          */
-        void threshold_output(VectorXf output);
-
-
+        VectorXf NeuralNetwork::threshold_output(VectorXf output);
 };
 
 } // 
