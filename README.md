@@ -4,11 +4,15 @@ This is my own implementation for a feed-forward artificial neural network (ANN)
 
 ## Requirements
 
-I compiled this using a Mac, and gcc (or really clang) version 4.2.1.  Other library requirements and versions will be listed as I continue this project.
+I compiled this using a Mac, and gpp (or really clang) version 4.2.1. Other libraries required to run include:
+
+* Eigen: http://eigen.tuxfamily.org/index.php?title=Main\_Page
+* GoogleTest (link to my forked repo): https://github.com/dadler6/googletest 
 
 ## Compliling instructions.
 
 If all requirements are satisfied, you can combile using the make file.  I will list how to compile using the makefile, and any specific instructions for test cases, etc as this project continues.
+
 
 ## Folder structure
 
