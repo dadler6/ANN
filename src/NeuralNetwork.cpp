@@ -18,6 +18,7 @@ namespace neuralnetwork {
 // Public methods
 NeuralNetwork::NeuralNetwork(void) = default;
 
+
 NeuralNetwork::NeuralNetwork(
     int n_layers, 
     VectorXf conf, 
@@ -28,30 +29,34 @@ NeuralNetwork::NeuralNetwork(
     num_layers = n_layers;
     eta = step;
     threshold = thresh;
-    // Create the vector
-    for (int i = 0; i < num_layers; i++) {
-        weights.push_back(VectorXf::Random(conf(i)).array() - 0.5);
+    // Create the vector of matrix weights
+    // and add one for the w_o node at each step
+    for (int i = 0; i < (num_layers - 1); i++) {
+        weights.push_back(
+            MatrixXf::Random(conf(i + 1) + 1, conf(i) + 1).array() - 
+            0.5
+        );
     };
 };
 
 
-NeuralNetwork::~NeuralNetwork(void) {
-
-};
+NeuralNetwork::~NeuralNetwork(void) {};
 
 
 void NeuralNetwork::fit(MatrixXf X, VectorXf y) {
     // Set starting parameters
     VectorXf x;
     int curr_iter = 0;
+    // Add column of one's to X to work with hidden layers
+    MatrixXf X_new = add_ones(X);
     // Go through ending criteria
     while ((curr_error > cutoff_err) || (curr_iter < max_iter)) {
         // Initialize new output to 0
         o = VectorXf::Zero(y.rows());
         // Go through each training example
-        for (size_t r = 0; r < X.rows(); r++) {
+        for (size_t r = 0; r < X_new.rows(); r++) {
             // Get current row
-            x = X.row(r);
+            x = X_new.row(r);
             // Feed forward
             o(r) = feed_forward(x);
             // Back propogate
@@ -76,11 +81,13 @@ istream & operator>>(istream &in, const NeuralNetwork &nn) {
 
 
 VectorXf NeuralNetwork::predict(MatrixXf X) {
+    // Add ones
+    MatrixXf X_new = add_ones(X);
     // Initialize vector of 0's as output
-    o = VectorXf::Zero(X.rows());
+    o = VectorXf::Zero(X_new.rows());
     // Go through each traning example
-    for (size_t r = 0; r < X.rows(); r++) {
-        o(r) = feed_forward(X.row(r));
+    for (size_t r = 0; r < X_new.rows(); r++) {
+        o(r) = feed_forward(X_new.row(r));
     }
     // For testing purposes
     return o;
@@ -94,10 +101,17 @@ static VectorXf error_term(VectorXf output, VectorXf target) {
            (target - output).array();
 };
 
+static MatrixXf add_ones(MatrixXf X) {
+    // Add row of ones
+    MatrixXf X_new = MatrixXf::Ones(X.rows(), X.cols() + 1);
+    X_new.block(0, 1, X.rows(), X.cols()) = X;
+    return X_new;
+};
+
 
 float NeuralNetwork::feed_forward(VectorXf x) {
     // Copy matrix into inputs
-    MatrixXf curr = x;
+    VectorXf curr = x;
 
     // Get a temporary output
     VectorXf temp_output;
@@ -107,8 +121,9 @@ float NeuralNetwork::feed_forward(VectorXf x) {
 
     // Go through each part of the vactor and multiply by the weights
     for(
-        vector<VectorXf>::iterator it = weights.begin(); 
-        it != weights.end(); ++it
+        vector<MatrixXf>::iterator it = weights.begin(); 
+        it != weights.end(); 
+        ++it
     ) {
         // Push back current value
         temp_outputs.push_back(curr);
@@ -150,21 +165,29 @@ void NeuralNetwork::back_propogate(VectorXf y) {
 
     // Start at the end of the weights and calculate errors
     for (
-        vector<MatrixXf>::reverse_iterator i = temp_outputs.rbegin(); 
+        vector<VectorXf>::reverse_iterator i = temp_outputs.rbegin(); 
         i != temp_outputs.rend(); 
         i++
     ) {
         // Check if at the end of the vector
         if (end_counter) {
+            // Calculate:
+            // delta_i = o * (1 - o) * (t - o)
             delta.push_back(
-                i->array() * (1 - i->array()) * (y.array() - i->array())
+                i->array() * 
+                (1 - i->array()) * (y.array() - i->array())
             );
             end_counter = false;
         } else {
+            // Calculate:
+            // delta_i = o * (1 - o) * W * delta_{i + 1}
             delta.push_back(
                 i->array() * 
                 (1 - i->array()) * 
-                weights[num_layers - 1 - curr_pos].dot(delta[curr_pos])
+                (
+                    weights[num_layers - 1 - curr_pos] * 
+                    delta[curr_pos]
+                ).array()
             );
             curr_pos++;
         };

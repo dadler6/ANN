@@ -32,6 +32,7 @@ class NeuralNetwork {
          */
         NeuralNetwork(void);
 
+
         /**
          * Constructor for the neural network.  Will setup all the basic
          * parameters needed to train the network.
@@ -44,10 +45,12 @@ class NeuralNetwork {
          */
         NeuralNetwork(int n_layers, VectorXf conf, float step, float thresh);
 
+
         /**
          * Destructor for the neural network
          */
         ~NeuralNetwork(void);
+
 
         /**
          * Fit a nerual network based upon the features and target output
@@ -58,6 +61,7 @@ class NeuralNetwork {
          * ArrayXf y, the target values (n data points x 1)
          */
         void fit(MatrixXf X, VectorXf y);
+
 
         /**
          * Predict a set of target values based upon a set of features
@@ -71,6 +75,7 @@ class NeuralNetwork {
          */
         VectorXf predict(MatrixXf X);
 
+
         /**
          * Save to file using ostream operator
          * 
@@ -79,6 +84,7 @@ class NeuralNetwork {
          * NeuralNetwork &nn: the object to write
          */
         friend ostream & operator<<(ostream &out, const NeuralNetwork &nn);
+
 
         /**
          * Open a file using the istream operator.
@@ -91,9 +97,9 @@ class NeuralNetwork {
 
     private:
         // Parameters to be set by a user
-        vector<VectorXf> weights;
+        vector<MatrixXf> weights;
         vector<VectorXf> temp_outputs;
-        vector<MatrixXf> delta;
+        vector<VectorXf> delta;
         int num_layers;
         float eta;
         float threshold;
@@ -104,6 +110,7 @@ class NeuralNetwork {
         int max_iter = 1000;
         float cutoff_err = 0.05;
         float curr_error = 1000000.0;
+
 
         /**
          * Calculate the error term based upon a target and a given output.  
@@ -118,6 +125,19 @@ class NeuralNetwork {
          * VectorXf, an array of the delta_k values
          */
         static VectorXf error_term(VectorXf output, VectorXf target);
+
+
+        /**
+         * Add ones to an input dataset.
+         * 
+         * params:
+         * MatrixXf X, the original data
+         * 
+         * returns:
+         * MatrixXf X_new, the new data with a column of ones appended
+         */
+        static MatrixXf add_ones(MatrixXf X);
+
 
         /**
          * Feed forward parameters and calculate end error term.

@@ -6,8 +6,8 @@
  * GitHub: https://github.com/dadler6/
  * 
  * Tests the code that is an:
- * Implementation file for the Neural Network class that will utilize back 
- * propogation and stochastic gradient descent.
+ * Implementation file for the Neural Network class that 
+ * will utilize back propogation and stochastic gradient descent.
  */
 
 // Include
@@ -16,9 +16,31 @@
 
 // Using
 using namespace neuralnetwork;
+using namespace gtest;
 using namespace std;
 
-// Practice test
+// Test fixture
+class ANNTestFixture1: public::testing::test { 
+    public: 
+    ANNTestFixture1( ) { 
+        // initialization code here
+    } 
+    
+    void SetUp( ) { 
+        // code here will execute just before the test ensues 
+    }
+    
+    void TearDown( ) { 
+        // code here will be called just after the test completes
+        // ok to through exceptions from here if need be
+    }
+    
+    ~ANNTestFixture1( )  { 
+        // cleanup any pending stuff, but no exceptions allowed
+    }
+    
+    // put in any custom data members that you need 
+};
 
 TEST(ErrorTermCheck, Check) { 
     // Define inputs
