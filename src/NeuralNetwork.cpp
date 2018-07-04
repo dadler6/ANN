@@ -21,7 +21,7 @@ NeuralNetwork::NeuralNetwork(void) = default;
 
 NeuralNetwork::NeuralNetwork(
     int n_layers, 
-    VectorXf conf, 
+    VectorXi conf, 
     float step, 
     float thresh
 ) {
@@ -54,13 +54,15 @@ void NeuralNetwork::fit(MatrixXf X, VectorXf y) {
         // Initialize new output to 0
         o = VectorXf::Zero(y.rows());
         // Go through each training example
-        for (size_t r = 0; r < X_new.rows(); r++) {
+        for (int r = 0; r < X_new.rows(); r++) {
             // Get current row
             x = X_new.row(r);
             // Feed forward
             o(r) = feed_forward(x);
+            cout << "fed forward" << endl;
             // Back propogate
             back_propogate(y);
+            cout << "back prop" << endl;
             // Update weights
             update_weights();
         };
@@ -70,14 +72,14 @@ void NeuralNetwork::fit(MatrixXf X, VectorXf y) {
 };
 
 
-ostream & operator<<(ostream &out, const NeuralNetwork &nn) {
-    // Save contents to file
-};
+// ostream & operator<<(ostream &out, const NeuralNetwork &nn) {
+//     // Save contents to file
+// };
 
 
-istream & operator>>(istream &in, const NeuralNetwork &nn) {
-    // Open up file
-};
+// istream & operator>>(istream &in, const NeuralNetwork &nn) {
+//     // Open up file
+// };
 
 
 VectorXf NeuralNetwork::predict(MatrixXf X) {
@@ -86,7 +88,7 @@ VectorXf NeuralNetwork::predict(MatrixXf X) {
     // Initialize vector of 0's as output
     o = VectorXf::Zero(X_new.rows());
     // Go through each traning example
-    for (size_t r = 0; r < X_new.rows(); r++) {
+    for (int r = 0; r < X_new.rows(); r++) {
         o(r) = feed_forward(X_new.row(r));
     }
     // For testing purposes
@@ -94,14 +96,18 @@ VectorXf NeuralNetwork::predict(MatrixXf X) {
 };
 
 
+vector<MatrixXf> NeuralNetwork::get_weights(void) {
+    return weights;
+};
+
 // Private methods
-static VectorXf error_term(VectorXf output, VectorXf target) {
+VectorXf NeuralNetwork::error_term(VectorXf output, VectorXf target) {
     return output.array() * 
-           (1 - output.array()).array() * 
+           (1 - output.array()) * 
            (target - output).array();
 };
 
-static MatrixXf add_ones(MatrixXf X) {
+MatrixXf NeuralNetwork::add_ones(MatrixXf X) {
     // Add row of ones
     MatrixXf X_new = MatrixXf::Ones(X.rows(), X.cols() + 1);
     X_new.block(0, 1, X.rows(), X.cols()) = X;
@@ -143,9 +149,9 @@ void NeuralNetwork::sse(VectorXf y, VectorXf target) {
 };
 
 
-static VectorXf sigmoid(VectorXf output) {
+VectorXf NeuralNetwork::sigmoid(VectorXf output) {
     // Run the sigmoid function
-    return 1.0 / (output.exp().array() + 1).array();
+    return 1.0 / ((-1.0 * output.array().exp()) + 1);
 };
 
 
@@ -170,9 +176,15 @@ void NeuralNetwork::back_propogate(VectorXf y) {
         i++
     ) {
         // Check if at the end of the vector
+        cout << "start back prop" << endl;
         if (end_counter) {
             // Calculate:
             // delta_i = o * (1 - o) * (t - o)
+            cout << i->array() << endl;
+            cout << (1 - i->array()) << endl;
+            cout << (y - *i) << endl;
+            cout << i->array() * 
+                (1 - i->array()) * (y - *i).array() << endl;
             delta.push_back(
                 i->array() * 
                 (1 - i->array()) * (y.array() - i->array())

@@ -16,6 +16,7 @@
 #include <Eigen/Dense>
 #include <unsupported/Eigen/MatrixFunctions>
 #include <vector>
+#include <iostream>
 
 // Name space
 using namespace Eigen;
@@ -43,7 +44,7 @@ class NeuralNetwork {
          * float eta, the training step size for gradiet descent
          * float threshold, the threshold for classification
          */
-        NeuralNetwork(int n_layers, VectorXf conf, float step, float thresh);
+        NeuralNetwork(int n_layers, VectorXi conf, float step, float thresh);
 
 
         /**
@@ -75,6 +76,14 @@ class NeuralNetwork {
          */
         VectorXf predict(MatrixXf X);
 
+        /**
+         * Get the weights of the network
+         * 
+         * returns:
+         * vector<MatrixXf>, the weights of the neural network
+         */
+        vector<MatrixXf> get_weights(void);
+
 
         /**
          * Save to file using ostream operator
@@ -83,7 +92,7 @@ class NeuralNetwork {
          * ostream &out: the filename to save to
          * NeuralNetwork &nn: the object to write
          */
-        friend ostream & operator<<(ostream &out, const NeuralNetwork &nn);
+        // friend ostream & operator<<(ostream &out, const NeuralNetwork &nn);
 
 
         /**
@@ -93,7 +102,7 @@ class NeuralNetwork {
          * istream &in: the filename to open
          * NeuralNetwork &nn: the object to create
          */
-        friend istream & operator>>(istream &in, const NeuralNetwork &nn);
+        // friend istream & operator>>(istream &in, const NeuralNetwork &nn);
 
     private:
         // Parameters to be set by a user
@@ -197,7 +206,7 @@ class NeuralNetwork {
          * return:
          * VectorXf, the thresholded object
          */
-        VectorXf NeuralNetwork::threshold_output(VectorXf output);
+        VectorXf threshold_output(VectorXf output);
 };
 
 } // 
