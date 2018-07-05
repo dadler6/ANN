@@ -120,22 +120,6 @@ class NeuralNetwork {
         float cutoff_err = 0.05;
         float curr_error = 1000000.0;
 
-
-        /**
-         * Calculate the error term based upon a target and a given output.  
-         * Will follow the vectorized version of the following:
-         * delta_k = o_k * (1 - o_k)(t_k - o_k)
-         * 
-         * params:
-         * VectorXf output, an array that is the TARGET value (t_k)
-         * VectorXf target, an array that is the OUTPUT value (o_k)
-         * 
-         * returns:
-         * VectorXf, an array of the delta_k values
-         */
-        static VectorXf error_term(VectorXf output, VectorXf target);
-
-
         /**
          * Add ones to an input dataset.
          * 
