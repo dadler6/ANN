@@ -33,7 +33,7 @@ NeuralNetwork::NeuralNetwork(
     // and add one for the w_o node at each step, except for last layer
     for (int i = 0; i < (num_layers - 2); i++) {
         weights.push_back(
-            MatrixXf::Random(conf(i + 1) + 1, conf(i) + 1).array() - 
+            MatrixXf::Random(conf(i + 1) + 1, conf(i) + 1).array() * 
             0.5
         );
     };
@@ -42,7 +42,7 @@ NeuralNetwork::NeuralNetwork(
         MatrixXf::Random(
             conf(num_layers - 1), 
             conf(num_layers - 2) + 1
-        ).array() - 0.5
+        ).array() * 0.5
     );
 };
 
@@ -57,6 +57,9 @@ void NeuralNetwork::fit(MatrixXf X, VectorXf y) {
     // Add column of one's to X to work with hidden layers
     MatrixXf X_new = add_ones(X);
     // Go through ending criteria
+    //for (int iter = 0; iter < 1000; iter++) {
+      //  cout << "ITER: " << endl;
+        //cout << iter << endl;
     while ((curr_error > cutoff_err) && (curr_iter < max_iter)) {
         // Initialize new output to 0
         o = VectorXf::Zero(y.rows());
@@ -66,23 +69,28 @@ void NeuralNetwork::fit(MatrixXf X, VectorXf y) {
             x = X_new.row(r);
             // Feed forward
             o(r) = feed_forward(x);
-            cout << x << endl;
-            cout << "fed forward" << endl;
+            // cout << x << endl;
+            // cout << "fed forward" << endl;
             // Back propogate
             back_propogate(y.row(r));
-            cout << "back prop" << endl;
+            // cout << "back prop" << endl;
             // Update weights
             update_weights();
-            cout << "weight update" << endl;
+            // cout << "weight update" << endl;
         };
         // Update error
-        cout << "o" << endl;
-        cout << o << endl;
-        cout << "y" << endl;
-        cout << y << endl;
-        sse(o, y);
+        // cout << "o" << endl;
+        // cout << o << endl;
+        // cout << "y" << endl;
+        // cout << y << endl;
+        sse(threshold_output(o), y);
         cout << "curr error" << endl;
         cout << curr_error << endl;
+        cout << "curr_iter" << endl;
+        cout << curr_iter << endl;
+        cout << "curr_output" << endl;
+        cout << o << endl;
+        curr_iter++;
     }
 };
 
@@ -107,7 +115,7 @@ VectorXf NeuralNetwork::predict(MatrixXf X) {
         o(r) = feed_forward(X_new.row(r));
     }
     // For testing purposes
-    return o;
+    return threshold_output(o);
 };
 
 
@@ -145,10 +153,10 @@ float NeuralNetwork::feed_forward(VectorXf x) {
         // Replicate current value of the iterator into a matrix
         curr = sigmoid(*it * curr);
     };
-    // Pass through threshold to get output
-    temp_output = threshold_output(curr);
-    temp_outputs.push_back(temp_output);
-    return temp_output(0);
+    temp_outputs.push_back(curr);
+    // cout << "FEED FORWARD TEMP OUTPUTS" << endl;
+    // cout << curr << endl;
+    return curr(0);
 };
 
 
@@ -160,7 +168,7 @@ void NeuralNetwork::sse(VectorXf y, VectorXf target) {
 
 VectorXf NeuralNetwork::sigmoid(VectorXf output) {
     // Run the sigmoid function
-    return 1.0 / ((-1.0 * output.array().exp()) + 1);
+    return 1.0 / ((1 + (-1.0 * output.array()).exp()));
 };
 
 
@@ -172,34 +180,55 @@ VectorXf NeuralNetwork::threshold_output(VectorXf output) {
 };
 
 
-void NeuralNetwork::back_propogate(VectorXf y) {
+void NeuralNetwork::back_propogate(VectorXf y_i) {
     // Clear vector and set end counter
     delta.clear();
     bool end_counter = true;
     int curr_pos = 0;
 
     // Start at the end of the weights and calculate errors
-    for (
-        vector<VectorXf>::reverse_iterator i = temp_outputs.rbegin(); 
-        i != temp_outputs.rend(); 
-        i++
-    ) {
+    for (size_t i = (temp_outputs.size() - 1); i > 0; i--) {
         // Check if at the end of the vector
-        cout << "start back prop" << endl;
+        // cout << "start back prop" << endl;
         if (end_counter) {
             // Calculate:
             // delta_i = o * (1 - o) * (t - o)
+            // cout << "LAYER 1" << endl;
+            // cout << "i" << endl;
+            // cout << temp_outputs[i] << endl;
+            // cout << "y_i" << endl;
+            // cout << y_i << endl;
+            // cout << "delta" << endl;
+            cout <<  temp_outputs[i].array() * 
+                (1 - temp_outputs[i].array()) * 
+                (y_i - temp_outputs[i]).array() << endl;
             delta.push_back(
-                 i->array() * 
-                (1 - i->array()) * (y - *i).array()
+                 temp_outputs[i].array() * 
+                (1 - temp_outputs[i].array()) * 
+                (y_i - temp_outputs[i]).array()
             );
             end_counter = false;
         } else {
             // Calculate:
             // delta_i = o * (1 - o) * W * delta_{i + 1}
+            // cout << "LAYER 2" << endl;
+            // cout << "i" << endl;
+            // cout << temp_outputs[i] << endl;
+            // cout << "weights[num_layers - 2 - curr_pos]" << endl;
+            // cout << weights[num_layers - 2 - curr_pos] << endl;
+            // cout << "delta[curr_pos]" << endl;
+            // cout << delta[curr_pos].transpose() << endl;
+            // cout << "delta new" << endl;
+            cout << temp_outputs[i].array() * 
+                (1 - temp_outputs[i].array()) * 
+                (
+                    delta[curr_pos].transpose() *
+                    weights[num_layers - 2 - curr_pos]
+    
+                ).transpose().array() << endl;
             delta.push_back(
-                i->array() * 
-                (1 - i->array()) * 
+                temp_outputs[i].array() * 
+                (1 - temp_outputs[i].array()) * 
                 (
                     delta[curr_pos].transpose() *
                     weights[num_layers - 2 - curr_pos]
@@ -223,10 +252,20 @@ void NeuralNetwork::update_weights(void) {
         i++
     ) {
         // Update weights
+        // cout << "weights pre" << endl;
+        // cout << weights[curr_post_w] << endl;
+        // cout << "delta" << endl;
+        // cout << delta[curr_pos] << endl;
+        // cout << "temp outputs" << endl;
+        // cout << temp_outputs[i] << endl;
+        // cout << "(temp_outputs[i] * delta[curr_pos])" << endl;
+        // cout << (temp_outputs[i] * delta[curr_pos]) << endl;
         temp = (
-            eta * (delta[curr_pos].array() * temp_outputs[i].array())
+            eta * (temp_outputs[i] * delta[curr_pos]).array()
         ).transpose();
         weights[curr_post_w] += temp;
+        // cout << "weights post" << endl;
+        // cout << weights[curr_post_w] << endl;
         curr_pos--;
         curr_post_w++;
     };

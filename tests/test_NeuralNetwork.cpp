@@ -71,4 +71,19 @@ TEST_F(LogicalTextFixture, LogicalAndTest) {
 
     // Assert that there exists only one set of weights
     ASSERT_EQ(and_weights.size(), 1);
+}
+
+TEST_F(LogicalTextFixture, LogicalOrTest) { 
+    // Define inputs
+    NeuralNetwork ann_or;
+    ann_or = NeuralNetwork(n_layers, config, step, thresh);
+
+    // Fit
+    ann_or.fit(X, y_or);
+
+    // Check weights
+    vector<MatrixXf> or_weights = ann_or.get_weights();
+
+    // Assert that there exists only one set of weights
+    ASSERT_EQ(or_weights.size(), 1);
  }
