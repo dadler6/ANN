@@ -58,8 +58,9 @@ class LogicalTextFixture: public::testing::Test {
         };
 };
 
+
 TEST_F(LogicalTextFixture, LogicalAndTest) { 
-    // Define inputs
+    // Define network
     NeuralNetwork ann_and;
     ann_and = NeuralNetwork(n_layers, config, step, thresh);
 
@@ -73,8 +74,9 @@ TEST_F(LogicalTextFixture, LogicalAndTest) {
     ASSERT_EQ(and_weights.size(), 1);
 }
 
+
 TEST_F(LogicalTextFixture, LogicalOrTest) { 
-    // Define inputs
+    // Define network
     NeuralNetwork ann_or;
     ann_or = NeuralNetwork(n_layers, config, step, thresh);
 
@@ -86,4 +88,25 @@ TEST_F(LogicalTextFixture, LogicalOrTest) {
 
     // Assert that there exists only one set of weights
     ASSERT_EQ(or_weights.size(), 1);
- }
+}
+
+ TEST_F(LogicalTextFixture, LogicalXOrTest) { 
+    // Define output
+    int n_layers_2 = 3;
+    VectorXi config_2;
+    config_2.resize(3);
+    config_2 << 2, 2, 1;
+
+    // Define network
+    NeuralNetwork ann_xor;
+    ann_xor = NeuralNetwork(n_layers_2, config_2, step, thresh);
+
+    // Fit
+    ann_xor.fit(X, y_xor);
+
+    // Check weights
+    vector<MatrixXf> xor_weights = ann_xor.get_weights();
+
+    // Assert that there exists only one set of weights
+    ASSERT_EQ(xor_weights.size(), 2);
+}

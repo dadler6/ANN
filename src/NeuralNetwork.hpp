@@ -116,7 +116,7 @@ class NeuralNetwork {
         VectorXf o;
 
         // Parameters that are constant
-        int max_iter = 1000;
+        int max_iter = 10000;
         float cutoff_err = 0.05;
         float curr_error = 1000000.0;
 
