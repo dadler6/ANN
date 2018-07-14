@@ -9,9 +9,9 @@ I compiled this using a Mac, and gpp (or really clang) version 4.2.1. Other libr
 * Eigen: http://eigen.tuxfamily.org/index.php?title=Main\_Page
 * GoogleTest (link to my forked repo): https://github.com/dadler6/googletest 
 
-## Compliling instructions.
+## Compiling instructions.
 
-If all requirements are satisfied, you can combile using the make file.  I will list how to compile using the makefile, and any specific instructions for test cases, etc as this project continues.
+If all requirements are satisfied, you can compile using the make file.  I will list how to compile using the makefile, and any specific instructions for test cases, etc as this project continues.
 
 
 ## Folder structure
