@@ -185,6 +185,7 @@ void NeuralNetwork::back_propogate(VectorXf y_i) {
             end_counter = false;
         } else {
             // Calculate:
+            // delta_i = o * (1 - o) * sum_j(delta_j * w_ij)
             delta.push_back(
                 temp_outputs[i].array() * 
                 (1 - temp_outputs[i].array()) * 

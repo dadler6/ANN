@@ -72,6 +72,16 @@ TEST_F(LogicalTextFixture, LogicalAndTest) {
 
     // Assert that there exists only one set of weights
     ASSERT_EQ(and_weights.size(), 1);
+
+    // Due to threshold (which is when weights sum to 1), check
+    // that weights individually are < 1, but together are not
+    // less than one
+    // Also need to remember that weight(0) is the intercept weight
+    // w_0, so need to make sure that that is taken into account
+    ASSERT_LT(and_weights[0](0), 1.0);
+    ASSERT_LT(and_weights[0](0) + and_weights[0](1), 1.0);
+    ASSERT_LT(and_weights[0](0) + and_weights[0](2), 1.0);
+    ASSERT_GT(and_weights[0].sum(), 1.0);
 }
 
 
@@ -88,6 +98,15 @@ TEST_F(LogicalTextFixture, LogicalOrTest) {
 
     // Assert that there exists only one set of weights
     ASSERT_EQ(or_weights.size(), 1);
+
+    // Due to threshold (which is when weights sum to 1), check
+    // that weights individually are > 1,
+    // Also need to remember that weight(0) is the intercept weight
+    // w_0, so need to make sure that that is taken into account
+    // when summing weights
+    ASSERT_LT(or_weights[0](0), 1.0);
+    ASSERT_GT(or_weights[0](0) + or_weights[0](1), 1.0);
+    ASSERT_GT(or_weights[0](0) + or_weights[0](2), 1.0);
 }
 
  TEST_F(LogicalTextFixture, LogicalXOrTest) { 
@@ -109,4 +128,18 @@ TEST_F(LogicalTextFixture, LogicalOrTest) {
 
     // Assert that there exists only one set of weights
     ASSERT_EQ(xor_weights.size(), 2);
+
+    // Cannot easily test since multi-layer means
+    // non-linearity.  Simply going to test the predict
+    // function in this case with a vector of data
+    // This is a little silly since I am predicting on
+    // the training data essentially, but at least will
+    // show a proof of concept with the predict function.
+    VectorXf pred_y = ann_xor.predict(X);
+    cout << X << endl << endl;
+    cout << pred_y << endl;
+    ASSERT_EQ(pred_y(0), 0.0);
+    ASSERT_EQ(pred_y(1), 1.0);
+    ASSERT_EQ(pred_y(2), 1.0);
+    ASSERT_EQ(pred_y(3), 0.0);
 }
