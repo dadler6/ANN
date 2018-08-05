@@ -16,6 +16,7 @@
 #include <Eigen/Dense>
 #include <unsupported/Eigen/MatrixFunctions>
 #include <vector>
+#include <iostream>
 
 // Name space
 using namespace Eigen;
@@ -32,6 +33,7 @@ class NeuralNetwork {
          */
         NeuralNetwork(void);
 
+
         /**
          * Constructor for the neural network.  Will setup all the basic
          * parameters needed to train the network.
@@ -42,12 +44,14 @@ class NeuralNetwork {
          * float eta, the training step size for gradiet descent
          * float threshold, the threshold for classification
          */
-        NeuralNetwork(int n_layers, VectorXf conf, float step, float thresh);
+        NeuralNetwork(int n_layers, VectorXi conf, float step, float thresh);
+
 
         /**
          * Destructor for the neural network
          */
         ~NeuralNetwork(void);
+
 
         /**
          * Fit a nerual network based upon the features and target output
@@ -58,6 +62,7 @@ class NeuralNetwork {
          * ArrayXf y, the target values (n data points x 1)
          */
         void fit(MatrixXf X, VectorXf y);
+
 
         /**
          * Predict a set of target values based upon a set of features
@@ -72,13 +77,23 @@ class NeuralNetwork {
         VectorXf predict(MatrixXf X);
 
         /**
+         * Get the weights of the network
+         * 
+         * returns:
+         * vector<MatrixXf>, the weights of the neural network
+         */
+        vector<MatrixXf> get_weights(void);
+
+
+        /**
          * Save to file using ostream operator
          * 
          * params:
          * ostream &out: the filename to save to
          * NeuralNetwork &nn: the object to write
          */
-        friend ostream & operator<<(ostream &out, const NeuralNetwork &nn);
+        // friend ostream & operator<<(ostream &out, const NeuralNetwork &nn);
+
 
         /**
          * Open a file using the istream operator.
@@ -87,13 +102,13 @@ class NeuralNetwork {
          * istream &in: the filename to open
          * NeuralNetwork &nn: the object to create
          */
-        friend istream & operator>>(istream &in, const NeuralNetwork &nn);
+        // friend istream & operator>>(istream &in, const NeuralNetwork &nn);
 
     private:
         // Parameters to be set by a user
-        vector<VectorXf> weights;
+        vector<MatrixXf> weights;
         vector<VectorXf> temp_outputs;
-        vector<MatrixXf> delta;
+        vector<VectorXf> delta;
         int num_layers;
         float eta;
         float threshold;
@@ -101,23 +116,21 @@ class NeuralNetwork {
         VectorXf o;
 
         // Parameters that are constant
-        int max_iter = 1000;
+        int max_iter = 10000;
         float cutoff_err = 0.05;
         float curr_error = 1000000.0;
 
         /**
-         * Calculate the error term based upon a target and a given output.  
-         * Will follow the vectorized version of the following:
-         * delta_k = o_k * (1 - o_k)(t_k - o_k)
+         * Add ones to an input dataset.
          * 
          * params:
-         * VectorXf output, an array that is the TARGET value (t_k)
-         * VectorXf target, an array that is the OUTPUT value (o_k)
+         * MatrixXf X, the original data
          * 
          * returns:
-         * VectorXf, an array of the delta_k values
+         * MatrixXf X_new, the new data with a column of ones appended
          */
-        static VectorXf error_term(VectorXf output, VectorXf target);
+        static MatrixXf add_ones(MatrixXf X);
+
 
         /**
          * Feed forward parameters and calculate end error term.
@@ -177,7 +190,7 @@ class NeuralNetwork {
          * return:
          * VectorXf, the thresholded object
          */
-        VectorXf NeuralNetwork::threshold_output(VectorXf output);
+        VectorXf threshold_output(VectorXf output);
 };
 
 } // 
