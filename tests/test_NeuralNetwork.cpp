@@ -59,6 +59,44 @@ class LogicalTextFixture: public::testing::Test {
 };
 
 
+TEST_F(LogicalTextFixture, LogicalNotTest) {
+    // Define input parameters
+    MatrixXf X_not;
+    VectorXf y_not;
+    VectorXi config_not;
+
+    X_not.resize(2, 1);
+    X_not << 0.0,
+             1.0;
+
+    y_not.resize(2);
+    y_not << 1.0, 0.0;
+
+    config_not.resize(2);
+    config_not << 1, 1;
+
+    // Define network
+    NeuralNetwork ann_not;
+    ann_not = NeuralNetwork(n_layers, config_not, step, thresh);
+
+    // Fit
+    ann_not.fit(X_not, y_not);
+
+    // Check weights
+    vector<MatrixXf> not_weights = ann_not.get_weights();
+
+    // Assert that there exists only one set of weights
+    ASSERT_EQ(not_weights.size(), 1);
+
+    // Due to threshold, the weight should be
+    // positive and greater than threshold for w_0,
+    // and negative and less than -1
+    // for the w_1 weight
+    ASSERT_GT(not_weights[0](0), 1.0);
+    ASSERT_LT(not_weights[0](0) + not_weights[0](1), 1.0);
+};
+
+
 TEST_F(LogicalTextFixture, LogicalAndTest) { 
     // Define network
     NeuralNetwork ann_and;
