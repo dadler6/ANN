@@ -71,7 +71,7 @@ void NeuralNetwork::fit(MatrixXf X, VectorXf y) {
             update_weights();
         };
         // Update error
-        sse(threshold_output(o), y);
+        sse(predict(X), y);
         curr_iter++;
     }
     // Outputs
@@ -99,7 +99,6 @@ VectorXf NeuralNetwork::predict(MatrixXf X) {
     for (int r = 0; r < X_new.rows(); r++) {
         o(r) = feed_forward(X_new.row(r));
     }
-    // For testing purposes
     return threshold_output(o);
 };
 

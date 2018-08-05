@@ -136,8 +136,6 @@ TEST_F(LogicalTextFixture, LogicalOrTest) {
     // the training data essentially, but at least will
     // show a proof of concept with the predict function.
     VectorXf pred_y = ann_xor.predict(X);
-    cout << X << endl << endl;
-    cout << pred_y << endl;
     ASSERT_EQ(pred_y(0), 0.0);
     ASSERT_EQ(pred_y(1), 1.0);
     ASSERT_EQ(pred_y(2), 1.0);
