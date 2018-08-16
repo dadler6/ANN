@@ -28,14 +28,46 @@
 #include <gtest/gtest.h>
 
 // Using
-using namespace neuralnetwork;
 using namespace std;
 
-/**
- * TestOpenData
- * 
- * Tests the funtion that opens data and loads it into an eigen matrix
- */
-TEST(TestOpenData, openCSV) {
-    //
+// Test fixture
+class DataIOTestFixture: public::testing::Test { 
+    protected:
+    // Define variables
+    MatrixXf X_input;
+    char * filename;
+    char * saved_network_filename;
+
+    virtual void SetUp() {
+        // Add matrix variables
+        X_input.resize(4, 2);
+        X_input << 0.0, 0.0, 0.0,
+             0.0, 1.0, 1.0,
+             1.0, 0.0, 1.0,
+             1.0, 1.0, 0.0;
+        // Prep filenames
+        filename = (char*)("data.txt");
+        saved_network_filename = (char*)("ann_test.txt");
+        // Save to file
+        std::ofstream file(filename);
+        if (file.is_open()) {
+            file << "x1,x2,y\n" << X_input << '\n';
+        }
+    };
+
+    virtual void TearDown() {
+        // If files exist, erase files
+        remove(filename);
+        remove(saved_network_filename);
+    };
+};
+
+
+TEST_F(DataIOTestFixture, OpenDataTest) {
+    // Test opening the data
+    string filename_str = string(filename);
+    MatrixXf X_result = open_data(filename_str);
+
+    // Assert equality with original matrix
+    ASSERT_TRUE(X_input.isApprox(X_result));
 }

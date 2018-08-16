@@ -147,6 +147,7 @@ TEST_F(LogicalTextFixture, LogicalOrTest) {
     ASSERT_GT(or_weights[0](0) + or_weights[0](2), 1.0);
 }
 
+
  TEST_F(LogicalTextFixture, LogicalXOrTest) { 
     // Define output
     int n_layers_2 = 3;
