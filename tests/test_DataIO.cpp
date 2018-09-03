@@ -26,6 +26,7 @@
 // Include
 #include "../src/DataIO.hpp"
 #include <gtest/gtest.h>
+#include <cmath>
 
 // Using
 using namespace std;
@@ -42,8 +43,20 @@ class DataIOTestFixture: public::testing::Test {
     MatrixXf X_input;
     char * filename;
     char * saved_network_filename;
+    int num_layers;
+    VectorXi config;
+    float thresh;
+    float eta;
+
 
     virtual void SetUp() {
+        // Add basic network variables
+        num_layers = 3;
+        eta = 0.1;
+        thresh = 1.0 / (1.0 + exp(-1));
+        config.resize(3);
+        config << 2, 2, 1;
+
         // Add matrix variables
         X_input.resize(4, 3);
         X_input << 0.0, 0.0, 0.0,
@@ -75,4 +88,21 @@ TEST_F(DataIOTestFixture, OpenDataTest) {
 
     // Assert equality with original matrix
     ASSERT_TRUE(X_input.isApprox(X_result));
+}
+
+TEST_F(DataIOTestFixture, TrainNetworkTest) {
+    // Test running the train_network function
+    string output_filename_str = string(saved_network_filename);
+
+    int return_train_value = train_network(
+        X_input,
+        eta,
+        thresh,
+        output_filename_str,
+        num_layers,
+        config
+    );
+
+    // Assert equality with original matrix
+    ASSERT_EQ(return_train_value, 0);
 }

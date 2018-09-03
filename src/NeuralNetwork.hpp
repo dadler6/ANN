@@ -92,7 +92,7 @@ class NeuralNetwork {
          * ostream &out: the filename to save to
          * NeuralNetwork &nn: the object to write
          */
-        // friend ostream & operator<<(ostream &out, const NeuralNetwork &nn);
+        friend ostream & operator<<(ostream &out, const NeuralNetwork *nn);
 
 
         /**

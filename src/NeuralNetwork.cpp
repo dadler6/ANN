@@ -80,9 +80,21 @@ void NeuralNetwork::fit(MatrixXf X, VectorXf y) {
 };
 
 
-// ostream & operator<<(ostream &out, const NeuralNetwork &nn) {
-//     // Save contents to file
-// };
+ostream & operator<<(ostream &out, const NeuralNetwork *nn) {
+    // Save hyperparameters
+    out << "num_layers" << endl;
+    out << nn->num_layers << endl;
+    out << "eta" << endl;
+    out << nn->eta << endl;
+    out << "thresh" << endl;
+    out << nn->threshold << endl;
+
+    // Save weights
+    for (int i=0; i < (int) nn->weights.size(); i++) {
+        out << "weights " << i << endl;
+        out << nn->weights[i] << endl;
+    }
+};
 
 
 // istream & operator>>(istream &in, const NeuralNetwork &nn) {

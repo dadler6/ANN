@@ -80,31 +80,29 @@ int train_network(
     int num_layers,
     VectorXf config
     ) {
-        return 0;
-    };
-//     // Get y data from X
-//     VectorXf y = X.rightCols(1);
-//     // Drop last column of X
-//     X = X.leftCols(X.cols() - 1);
+    // Get y data from X
+    VectorXf y = X.rightCols(1);
+    // Drop last column of X
+    X = X.leftCols(X.cols() - 1);
 
-//     // Build a neural network
-//     NeuralNetwork ann = NeuralNetwork(num_layers, config, eta, thresh);
+    // Build a neural network
+    NeuralNetwork ann = NeuralNetwork(num_layers, config, eta, thresh);
 
-//     // Fit the network
-//     cout << 'Fitting network...' << endl;
-//     ann.fit(X, y);
+    // Fit the network
+    cout << 'Fitting network...' << endl;
+    ann.fit(X, y);
 
-//     // Save network
-//     cout << 'Saving network...' << endl;
-//     ofstream ofs(output_filename);
-//     ofs << ann;
-//     ofs.close();
+    // Save network
+    cout << 'Saving network...' << endl;
+    ofstream ofs(output_filename);
+    ofs << &ann;
+    ofs.close();
 
-//     // End
-//     cout << "Network saved!" << endl;
+    // End
+    cout << "Network saved!" << endl;
 
-//     return 0;
-// }
+    return 0;
+}
 
 
 int predict_values(MatrixXf X, string ann_filename, string output_filename) {
