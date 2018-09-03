@@ -35,12 +35,15 @@ run: neural_network
 # Tests
 test_neural_network: neural_network
 	$(CC) $(CFLAGS) -I $(EIGEN) $(GTEST) $(TESTS)/test_NeuralNetwork.cpp $(BIN)/neural_network.o -o $(BIN)/test_neural_network
-test_main: neural_network
-	$(CC) $(CFLAGS) -I $(EIGEN) $(GTEST) $(TESTS)/test_main.cpp $(SRC)/main.cpp $(BIN)/neural_network.o -o $(BIN)/test_main
+test_dataio: dataio
+	$(CC) $(CFLAGS) -I $(EIGEN) $(GTEST) $(TESTS)/test_DataIO.cpp $(BIN)/dataio.o -o $(BIN)/test_dataio
 
 # neural_network
 neural_network:
 	$(CC) -c $(CFLAGS) -I $(EIGEN) $(SRC)/NeuralNetwork.cpp -o $(BIN)/neural_network.o
+
+dataio: neural_network
+	$(CC) -c $(CFLAGS) -I $(EIGEN) $(SRC)/DataIO.cpp $(BIN)/neural_network.o -o $(BIN)/dataio.o
 
 # Clean
 clean:

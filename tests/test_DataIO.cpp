@@ -24,11 +24,16 @@
  */
 
 // Include
-#include "../src/main.cpp"
+#include "../src/DataIO.hpp"
 #include <gtest/gtest.h>
 
 // Using
 using namespace std;
+
+// CSFFormat
+const static IOFormat CSVFormat(
+    StreamPrecision, DontAlignCols, ",", "\n"
+);
 
 // Test fixture
 class DataIOTestFixture: public::testing::Test { 
@@ -40,7 +45,7 @@ class DataIOTestFixture: public::testing::Test {
 
     virtual void SetUp() {
         // Add matrix variables
-        X_input.resize(4, 2);
+        X_input.resize(4, 3);
         X_input << 0.0, 0.0, 0.0,
              0.0, 1.0, 1.0,
              1.0, 0.0, 1.0,
@@ -51,7 +56,7 @@ class DataIOTestFixture: public::testing::Test {
         // Save to file
         std::ofstream file(filename);
         if (file.is_open()) {
-            file << "x1,x2,y\n" << X_input << '\n';
+            file << "x1,x2,y\n" << X_input.format(CSVFormat) << '\n';
         }
     };
 
