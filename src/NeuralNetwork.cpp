@@ -47,7 +47,10 @@ NeuralNetwork::NeuralNetwork(
 };
 
 
-NeuralNetwork::~NeuralNetwork(void) {};
+NeuralNetwork::~NeuralNetwork(void) {
+    // Delete weights variable
+    weights.clear();
+};
 
 
 void NeuralNetwork::fit(MatrixXf X, VectorXf y) {
@@ -80,7 +83,7 @@ void NeuralNetwork::fit(MatrixXf X, VectorXf y) {
 };
 
 
-ostream & operator<<(ostream &out, const NeuralNetwork *nn) {
+ostream & operator<<(ostream& out, const NeuralNetwork *nn) {
     // Save hyperparameters
     out << "num_layers" << endl;
     out << nn->num_layers << endl;
@@ -93,7 +96,8 @@ ostream & operator<<(ostream &out, const NeuralNetwork *nn) {
     for (int i=0; i < (int) nn->weights.size(); i++) {
         out << "weights " << i << endl;
         out << nn->weights[i] << endl;
-    }
+    };
+    return out;
 };
 
 

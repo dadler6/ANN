@@ -26,12 +26,10 @@
 // Include
 #include "DataIO.hpp"
 
-// Using
-using namespace neuralnetwork;
-using namespace std;
 
 // Constants
 size_t const VEC_SIZE = 100; 
+
 
 MatrixXf open_data(string f) {
     // Read in file
@@ -78,7 +76,7 @@ int train_network(
     float thresh,
     string output_filename,
     int num_layers,
-    VectorXf config
+    VectorXi config
     ) {
     // Get y data from X
     VectorXf y = X.rightCols(1);
@@ -86,23 +84,24 @@ int train_network(
     X = X.leftCols(X.cols() - 1);
 
     // Build a neural network
-    NeuralNetwork ann = NeuralNetwork(num_layers, config, eta, thresh);
+    NeuralNetwork *ann = new NeuralNetwork(num_layers, config, eta, thresh);
 
     // Fit the network
-    cout << 'Fitting network...' << endl;
-    ann.fit(X, y);
+    cout << "Fitting network..." << endl;
+    ann->fit(X, y);
 
     // Save network
-    cout << 'Saving network...' << endl;
+    cout << "Saving network..." << endl;
     ofstream ofs(output_filename);
-    ofs << &ann;
+    ofs << ann;
     ofs.close();
 
-    // End
+    // End and delete
     cout << "Network saved!" << endl;
+    delete ann;
 
     return 0;
-}
+};
 
 
 int predict_values(MatrixXf X, string ann_filename, string output_filename) {

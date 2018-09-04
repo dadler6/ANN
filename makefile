@@ -30,13 +30,13 @@ default: run
 test: test_neural_network test_main
 
 run: neural_network
-	$(CC) $(CFLAGS) -I $(EIGEN) $(SRC)/main.cpp $(BIN)/neural_network.o -o $(BIN)/run
+	$(CC) $(CFLAGS) -I $(EIGEN) $(SRC)/main.cpp $(BIN)/dataio.o $(BIN)/neural_network.o -o $(BIN)/run
 
 # Tests
 test_neural_network: neural_network
 	$(CC) $(CFLAGS) -I $(EIGEN) $(GTEST) $(TESTS)/test_NeuralNetwork.cpp $(BIN)/neural_network.o -o $(BIN)/test_neural_network
-test_dataio: dataio
-	$(CC) $(CFLAGS) -I $(EIGEN) $(GTEST) $(TESTS)/test_DataIO.cpp $(BIN)/dataio.o -o $(BIN)/test_dataio
+test_dataio: dataio neural_network
+	$(CC) $(CFLAGS) -I $(EIGEN) $(GTEST) $(TESTS)/test_DataIO.cpp $(BIN)/neural_network.o $(BIN)/dataio.o -o $(BIN)/test_dataio
 
 # neural_network
 neural_network:

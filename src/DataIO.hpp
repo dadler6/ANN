@@ -26,6 +26,11 @@
 #include <fstream>
 
 
+// Using
+using namespace neuralnetwork;
+using namespace std;
+
+
 /**
  * Open data based upon an input file name.
  * 
@@ -57,7 +62,7 @@ int train_network(
     float thresh,
     string output_filename,
     int num_layers,
-    VectorXf config
+    VectorXi config
 );
 
 

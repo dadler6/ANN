@@ -28,8 +28,10 @@
 #include <gtest/gtest.h>
 #include <cmath>
 
+
 // Using
 using namespace std;
+
 
 // CSFFormat
 const static IOFormat CSVFormat(
@@ -105,4 +107,8 @@ TEST_F(DataIOTestFixture, TrainNetworkTest) {
 
     // Assert equality with original matrix
     ASSERT_EQ(return_train_value, 0);
+
+    // Assert file exists
+    ifstream ifile(output_filename_str);
+    ASSERT_TRUE(ifile);
 }
