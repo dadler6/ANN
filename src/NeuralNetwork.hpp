@@ -92,7 +92,7 @@ class NeuralNetwork {
          * ostream &out: the filename to save to
          * NeuralNetwork &nn: the object to write
          */
-        // friend ostream & operator<<(ostream &out, const NeuralNetwork &nn);
+        friend ostream & operator<<(ostream &out, const NeuralNetwork *nn);
 
 
         /**
@@ -102,7 +102,7 @@ class NeuralNetwork {
          * istream &in: the filename to open
          * NeuralNetwork &nn: the object to create
          */
-        // friend istream & operator>>(istream &in, const NeuralNetwork &nn);
+        friend istream & operator>>(istream &in, NeuralNetwork *nn);
 
     private:
         // Parameters to be set by a user
@@ -130,6 +130,19 @@ class NeuralNetwork {
          * MatrixXf X_new, the new data with a column of ones appended
          */
         static MatrixXf add_ones(MatrixXf X);
+
+        /**
+         * Read in a matrix from a file
+         * 
+         * params: vector<vector<float> > cells, a pointer to a vector
+         *         int r, an integer with number of matrix rows
+         *         int c, an integer with number of matrix cols
+         * 
+         * returns:
+         * MatrixXf * X_new, a pointer to a matrix
+         */
+        static MatrixXf* read_matrix(
+            vector<vector<float> > vec, int r, int c);
 
 
         /**
