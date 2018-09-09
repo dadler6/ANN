@@ -16,19 +16,19 @@ If all requirements are satisfied, you can compile using the makefile.
 
 To compile the Neural Network for running, type
 
-<code>make run</code>
+```make run```
 
 This will create a run executable in bin/run.
 
 To compile tests, type
 
-<code>make test_neural_network</code>
+```make test_neural_network```
 
 which will make a test executable in bin/test_neural_network, to test NeuralNetwork.hpp/cpp.
 
 or
 
-<code>make test_dataio</code>
+```make test_dataio```
 
 which will make a test executable in bin/test_dataio, to test DataIO.hpp/cpp.
 
@@ -36,35 +36,34 @@ which will make a test executable in bin/test_dataio, to test DataIO.hpp/cpp.
 
 To run the test code (test_neural_network or test_dataio), run either of the following two lines after compiling:
 
-<code>
+```
     ./bin/test_neural_network
-    
     ./bin/test_dataio
-<code>
+```
 
 To train data, after compiling the run file, you will need a training dataset, saved in a .csv file, where the last column is the target values, and the first row are column headers, and a configuration file that specifies how many nodes should be within each network layer.  You can then execute training by typing:
 
-<code>
+```
     ./bin/run train path/to/train/data.csv output/file/path learning_rate threshold number_of_layers path/to/network/config/file.csv
-</code>
+```
 
 An example of training data for the "XOR" case can be found in data/test_data_1.csv and data/test_config_1.csv.  This code was run with the following command:
 
-<code>
+```
     ./bin/run train data/test_data_1.csv data/test_network_1.txt 0.1 0.731 3 data/test_config_1.csv
-</code>
+```
 
 This will save the trained network in a file called data/test_network_1.txt.  To then predict new data, you will need a saved .csv file with the matrix to predict target values on, saved with the first row as the column headers.  You can then run the following code:
 
-<code>
+```
     ./bin/run predict path/to/data.csv output/file/path.txt path/to/trained/network
-</code>
+```
 
 This will save the predicted target values to the designated output path.  For instance, within the above "XOR" training data executable call, I can predict values after taining (using the example data in data/test_predict_1.csv) by typing:
 
-<code>
+```
     ./bin/run predict data/test_predict_1.csv data/test_ans_1.txt data/test_network_1.txt
-</code>
+```
 
 Which will saved the predicted target values in a file called data/test_ans_1.txt
 
