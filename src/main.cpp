@@ -33,15 +33,17 @@ int main(int argc, char *argv[]) {
     string output_file = argv[3];
     
     // Check to see if argv is train or predict
-    if (strcmp(argv[1], "train") == 0) {
+    if ((strcmp(argv[1], "train") == 0) && (argc == 8)) {
         // Get other parameters
         float eta = stof(argv[4]);
         float thresh = stof(argv[5]);
         int num_layers = stof(argv[6]);
-        VectorXf config = open_data(argv[7]);
+        VectorXi config = open_data(argv[7]).cast<int>();
         // Train data
-        output_flag = train_network(X, eta, thresh, output_file, num_layers, config);
-    } else if (strcmp(argv[1], "predict") == 0) {
+        output_flag = train_network(
+            X, eta, thresh, output_file, num_layers, config
+        );
+    } else if ((strcmp(argv[1], "predict") == 0) && (argc == 5)) {
         // Get other parameters
         string ann_file = argv[4];
         output_flag = predict_values(X, ann_file, output_file);
@@ -50,5 +52,4 @@ int main(int argc, char *argv[]) {
     }
 
     return output_flag;
-   return 0;
 }

@@ -77,7 +77,7 @@ int train_network(
     string output_filename,
     int num_layers,
     VectorXi config
-    ) {
+) {
     // Get y data from X
     VectorXf y = X.rightCols(1);
     // Drop last column of X

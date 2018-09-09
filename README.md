@@ -1,28 +1,83 @@
 # ANN
-This is my own implementation for a feed-forward artificial neural network (ANN).  I have not written C++ in quite a bit, so pardon any distractions.
-
+This is my own implementation for a feed-forward artificial neural network (ANN).  I have not written in C++ in quite a bit, so pardon any distractions.
 
 ## Requirements
 
-I compiled this using a Mac, and gpp (or really clang) version 4.2.1. Other libraries required to run include:
+I compiled this using a Mac, and g++ (or really clang) version 4.2.1. Other libraries required to run include:
 
 * Eigen: http://eigen.tuxfamily.org/index.php?title=Main\_Page
 * GoogleTest (link to my forked repo): https://github.com/dadler6/googletest 
 
 ## Compiling instructions.
 
-If all requirements are satisfied, you can combile using the make file.  I will list how to compile using the makefile, and any specific instructions for test cases, etc as this project continues.
+If all requirements are satisfied, you can compile using the makefile.
 
+**Compiling**
+
+To compile the Neural Network for running, type
+
+<code>make run</code>
+
+This will create a run executable in bin/run.
+
+To compile tests, type
+
+<code>make test_neural_network</code>
+
+which will make a test executable in bin/test_neural_network, to test NeuralNetwork.hpp/cpp.
+
+or
+
+<code>make test_dataio</code>
+
+which will make a test executable in bin/test_dataio, to test DataIO.hpp/cpp.
+
+**Running**
+
+To run the test code (test_neural_network or test_dataio), run either of the following two lines after compiling:
+
+<code>
+    ./bin/test_neural_network
+    ./bin/test_dataio
+<code>
+
+To train data, after compiling the run file, you will need a training dataset, saved in a .csv file, where the last column is the target values, and the first row are column headers, and a configuration file that specifies how many nodes should be within each network layer.  You can then execute training by typing:
+
+<code>
+    ./bin/run train path/to/train/data.csv output/file/path learning_rate threshold number_of_layers path/to/network/config/file.csv
+</code>
+
+An example of training data for the "XOR" case can be found in data/test_data_1.csv and data/test_config_1.csv.  This code was run with the following command:
+
+<code>
+    ./bin/run train data/test_data_1.csv data/test_network_1.txt 0.1 0.731 3 data/test_config_1.csv
+</code>
+
+This will save the trained network in a file called data/test_network_1.txt.  To then predict new data, you will need a saved .csv file with the matrix to predict target values on, saved with the first row as the column headers.  You can then run the following code:
+
+<code>
+    ./bin/run predict path/to/data.csv output/file/path.txt path/to/trained/network
+</code>
+
+This will save the predicted target values to the designated output path.  For instance, within the above "XOR" training data executable call, I can predict values after taining (using the example data in data/test_predict_1.csv) by typing:
+
+<code>
+    ./bin/run predict data/test_predict_1.csv data/test_ans_1.txt data/test_network_1.txt
+</code>
+
+Which will saved the predicted target values in a file called data/test_ans_1.txt
 
 ## Folder structure
 
 **src**
 
-This is the code for the ANN implementation.  Files include:
+This is the source code for the ANN implementation.  Files include:
 
 * NeuralNetwork.hpp: The header file with declarations for the neuralnetwork namespace and NeuralNetwork class.
 * NeuralNetwork.cpp: The definitions for the methods of the NeuralNetwork class.
-* STILL IN PROGRESS main.cpp: Runtime file for running either a training or prediction of a neural network given data.
+* DataIO.hpp: The header file of declarations to read in/read out data to train/predict.
+* DataIO.cpp: The definitions for the methods within DataIO.hpp
+* main.cpp: Runtime file for either training or predicting given data.
 
 **bin**
 
@@ -33,18 +88,18 @@ Binaries for the neural network implementation.  These are not included within t
 Test cases for the code within the src folder.  Tests include:
 
 * test_NeuralNetwork.cpp: Basic tests showing how the NeuralNetwork object defined in NeuralNetwork.cpp can train and predict boolean operators.
-* STILL IN PROGRESS: test_main.cpp: Basic tests showing functionality of runtime code.
+* test_DataIO.cpp: Basic tests showing functionality of input/output code for training/prediction.
 
 **data**
 
-Data I use potentially within the test cases, exmaples.
+Data I've used to show functionality of the network. Files include:
+
+* test_data_1.csv: Example training data for "XOR" logic.  Last column are target values.
+* test_config_1.csv: Configuration file for the "XOR" network.
+* test_network_1.txt: The trained network for the "XOR" logic.
+* test_predict_1.txt: The "XOR" matrix again without target labels, used for testing prediction after training.
+* test_ans_1.txt: The predicted target values for the "XOR" logic.
 
 **examples**
 
-Examples on how to utilize the ANN created.
-
-## Implementation Notes
-
-There is a makefile included to compile if all libraries are installed on your computer.  The makefile currently supports the following commands:
-
-* ```make test_neural_network```: Compiles the NeuralNetwork.cpp file and test_NeuralNetwork.cpp into a bin/test_neural_network binary.
+Examples on how to utilize the ANN created.  This will be later populated with Python notebooks.

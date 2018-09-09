@@ -29,7 +29,7 @@ default: run
 # test
 test: test_neural_network test_main
 
-run: neural_network
+run: dataio neural_network
 	$(CC) $(CFLAGS) -I $(EIGEN) $(SRC)/main.cpp $(BIN)/dataio.o $(BIN)/neural_network.o -o $(BIN)/run
 
 # Tests
