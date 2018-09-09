@@ -38,6 +38,7 @@ To run the test code (test_neural_network or test_dataio), run either of the fol
 
 <code>
     ./bin/test_neural_network
+    
     ./bin/test_dataio
 <code>
 
