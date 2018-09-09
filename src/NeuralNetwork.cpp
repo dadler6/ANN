@@ -101,9 +101,83 @@ ostream & operator<<(ostream& out, const NeuralNetwork *nn) {
 };
 
 
-// istream & operator>>(istream &in, const NeuralNetwork &nn) {
-//     // Open up file
-// };
+MatrixXf* read_matrix(vector<vector<float> > vec, int r, int c) {
+    MatrixXf* weights_new = new MatrixXf(r, c);
+    for (int i=0; i < (int) vec.size(); i++) {
+        weights_new->row(i) = 
+            VectorXf::Map(&vec[i][0], vec[i].size());
+    }
+    return weights_new;
+};
+
+
+istream & operator>>(istream &in, NeuralNetwork *nn) {
+    // Open up file
+    string line;
+    bool bool_num_layers = false;
+    bool bool_eta = false;
+    bool bool_thresh = false;
+    bool bool_weights = false;
+    size_t const vec_size = 500;
+    string cell;
+    int c = 0;
+    int r = 0;
+    vector<float> *temp;
+    vector<vector<float> > cells;
+    while(getline(in, line)) {
+        if (line == "num_layers") {
+            bool_num_layers = true;
+            bool_eta = false;
+            bool_thresh = false;
+            bool_weights = false;
+        } else if (line == "eta") {
+            bool_num_layers = false;
+            bool_eta = true;
+            bool_thresh = false;
+            bool_weights = false;
+        } else if (line == "thresh") {
+            bool_num_layers = false;
+            bool_eta = false;
+            bool_thresh = true;
+            bool_weights = false;
+        } else if (line.find("weight") != string::npos) {
+            if (r > 0) {
+                MatrixXf *weights_new = 
+                    read_matrix(cells, r, c);
+                nn->weights.push_back(*weights_new);
+                cells.clear();
+            }
+            bool_num_layers = false;
+            bool_eta = false;
+            bool_thresh = false;
+            bool_weights = true;
+            r = 0;
+        } else if (bool_num_layers) {
+            nn->num_layers = stod(line);
+        } else if (bool_eta) {
+            nn->eta = stod(line);
+        } else if (bool_thresh) {
+            nn->threshold = stod(line);
+        } else if (bool_weights) {
+            temp = new vector<float>(vec_size);
+            stringstream lineStream(line);
+            c = 0;
+            while(getline(lineStream, cell, ' ')) {
+                if (cell.find_first_not_of(' ') != string::npos) {
+                    (*temp)[c] = stod(cell);
+                    c++;
+                }
+            }
+            temp->resize(c);
+            cells.push_back(*temp);
+            r++;
+        }
+    }
+    MatrixXf *weights_new = read_matrix(cells, r, c);
+    nn->weights.push_back(*weights_new);
+
+    return in;
+};
 
 
 VectorXf NeuralNetwork::predict(MatrixXf X) {

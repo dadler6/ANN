@@ -45,6 +45,7 @@ class DataIOTestFixture: public::testing::Test {
     MatrixXf X_input;
     char * filename;
     char * saved_network_filename;
+    char * output_filename;
     int num_layers;
     VectorXi config;
     float thresh;
@@ -68,6 +69,7 @@ class DataIOTestFixture: public::testing::Test {
         // Prep filenames
         filename = (char*)("data.txt");
         saved_network_filename = (char*)("ann_test.txt");
+        output_filename = (char*)("output_test.txt");
         // Save to file
         std::ofstream file(filename);
         if (file.is_open()) {
@@ -79,6 +81,7 @@ class DataIOTestFixture: public::testing::Test {
         // If files exist, erase files
         remove(filename);
         remove(saved_network_filename);
+        remove(output_filename);
     };
 };
 
@@ -105,10 +108,66 @@ TEST_F(DataIOTestFixture, TrainNetworkTest) {
         config
     );
 
-    // Assert equality with original matrix
+    // Assert the end result returned 0
     ASSERT_EQ(return_train_value, 0);
 
     // Assert file exists
     ifstream ifile(output_filename_str);
     ASSERT_TRUE(ifile);
+}
+
+
+TEST_F(DataIOTestFixture, PredictNetworkTest) {
+    // Test running the train_network function
+    string train_filename_str = string(saved_network_filename);
+    string output_filename_str = string(output_filename);
+
+    train_network(
+        X_input,
+        eta,
+        thresh,
+        train_filename_str,
+        num_layers,
+        config
+    );
+
+    // Now load data to predict
+    MatrixXf X_pred = X_input.leftCols(X_input.cols() - 1);
+
+    int return_pred_value = predict_values(
+        X_pred, 
+        train_filename_str, 
+        output_filename
+    );
+
+    // Assert the end result returned 0
+    ASSERT_EQ(return_pred_value, 0);
+
+    // Assert file exists
+    ifstream ifile(output_filename_str);
+    ASSERT_TRUE(ifile);
+
+    // True value
+    VectorXf y_true;
+    y_true.resize(4);
+    y_true << 0.0, 1.0, 1.0, 0.0;
+
+    // Open up file
+    ifstream in;
+    in.open(output_filename_str);
+    vector<float> y_vector;
+    int r = 0;
+    string line;
+    while(getline(in, line)) {
+        if (r > 0) {
+            y_vector.push_back(stod(line));
+        }
+        r++;
+    }
+
+    VectorXf y_result;
+    y_result.resize(r);
+    y_result = VectorXf::Map(&y_vector[0], y_vector.size());
+    // Assertion
+    ASSERT_TRUE(y_true.isApprox(y_result));
 }

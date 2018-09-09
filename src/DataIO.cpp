@@ -105,24 +105,24 @@ int train_network(
 
 
 int predict_values(MatrixXf X, string ann_filename, string output_filename) {
+
+    // Load in file
+    cout << "Reading in neural network..." << endl;
+    ifstream ifs(ann_filename);
+    NeuralNetwork *ann = new NeuralNetwork();
+    ifs >> ann;
+
+    // Predict data
+    cout << "Predicting data..." << endl;
+    VectorXf y = ann->predict(X);
+
+    // End and delete
+    cout << "Outputting data..." << endl;
+    ofstream ofs(output_filename);
+    if (ofs.is_open()) {
+        ofs << "PREDICTED" << "\n" << y;
+    }
+    delete ann;
+
     return 0;
-};
-
-//     // Load in file
-//     cout << "Reading in neural network..." << endl;
-//     ifstream ifs(ann_filename);
-//     NeuralNetwork ann = NeuralNetwork();
-//     ifs >> ann;
-
-//     // Predict data
-//     cout << "Predicting data..." << endl;
-//     VectorXf y = ann.predict(X);
-
-//     // End
-//     cout << "Outputting data..." << endl;
-//     ofstream ofs(output_filename);
-//     if (ofs.is_open()) {
-//         ofs << "PREDICTED" << "\n" << y;
-//     }
-//     return 0;
-// }
+}
